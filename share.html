@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Evoto Share Logic Demo</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.evoto.ai/annual-bill" />
+    <meta property="og:title" content="Evoto Rewind 2025" />
+    <meta property="og:description" content="Look back your 2025 workflow!" />
+    <meta property="og:image" content="https://res-dev.evoto.ai/ui/www/images/pages/newHome/twitter_image.png" />
+    <meta property="og:image:alt" content="Evoto Rewind 2025 preview" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Evoto Rewind 2025" />
+    <meta name="twitter:description" content="Look back your 2025 workflow!" />
+    <meta name="twitter:image" content="https://res-dev.evoto.ai/ui/www/images/pages/newHome/twitter_image.png" />
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Inter", "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #050505;
+        color: #f4f4f4;
+        padding: 24px;
+      }
+
+      main {
+        width: min(420px, 100%);
+      }
+
+      .card {
+        background: linear-gradient(145deg, #1f1f23, #111113);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+      }
+
+      .topbar button {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+        border: none;
+        background: rgba(255, 255, 255, 0.08);
+        color: #f4f4f4;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+
+      p.subtitle {
+        margin: 8px 0 24px;
+        color: #9ca3af;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .stat-card {
+        padding: 16px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .stat-label {
+        font-size: 12px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #9ca3af;
+      }
+
+      .stat-value {
+        font-size: 26px;
+        font-weight: 700;
+      }
+
+      .stat-unit {
+        font-size: 14px;
+        color: #9ca3af;
+      }
+
+      .favorite {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .actions {
+        margin-top: 24px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        flex: 1;
+        min-width: 140px;
+        padding: 14px 16px;
+        border-radius: 999px;
+        font-size: 15px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        background: #f2cd5c;
+        color: #1c1403;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.12);
+        color: #f4f4f4;
+      }
+
+      .kakao-input {
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .kakao-input input {
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.04);
+        color: #f4f4f4;
+        font-size: 14px;
+      }
+
+      .sheet {
+        position: fixed;
+        inset: 0;
+        display: none;
+      }
+
+      .sheet[data-open="true"] {
+        display: block;
+      }
+
+      .sheet__mask {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+      }
+
+      .sheet__panel {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #1a1a1d;
+        border-radius: 24px 24px 0 0;
+        padding: 24px;
+        box-shadow: 0 -20px 40px rgba(0, 0, 0, 0.45);
+      }
+
+      .sheet__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 16px;
+      }
+
+      .sheet__item {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        color: inherit;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+      }
+
+      .sheet__cancel {
+        width: 100%;
+        margin-top: 18px;
+        padding: 14px;
+        border-radius: 999px;
+        border: none;
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .copy-state {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .log {
+        margin-top: 32px;
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.3);
+        font-size: 13px;
+        max-height: 220px;
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+
+      .preview-section {
+        margin-top: 32px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .preview-card {
+        background: #0c0c10;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .preview-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .preview-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .preview-icon--twitter {
+        background: linear-gradient(135deg, #00acee, #1877f2);
+      }
+
+      .preview-icon--facebook {
+        background: #1778f2;
+      }
+
+      .preview-meta {
+        font-size: 14px;
+        color: #9ca3af;
+      }
+
+      .preview-title {
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .preview-description {
+        font-size: 14px;
+        color: #d1d5db;
+      }
+
+      .preview-image {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .preview-image img {
+        width: 100%;
+        display: block;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <main>
+      <section id="sharePreview" class="card">
+        <div class="topbar">
+          <button type="button" aria-label="Back" onclick="alert('Back action placeholder')">←</button>
+          <button type="button" aria-label="Share" id="openShare">⇪</button>
+        </div>
+
+        <div class="grid">
+          <article class="stat-card">
+            <div class="stat-label">Became User for</div>
+            <div class="stat-value" data-stat="days">480</div>
+            <div class="stat-unit">days</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label">Edited</div>
+            <div class="stat-value" data-stat="edited">9999</div>
+            <div class="stat-unit">images</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label">Exported</div>
+            <div class="stat-value" data-stat="exported">9999</div>
+            <div class="stat-unit">images</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label">Explored</div>
+            <div class="stat-value" data-stat="effects">145</div>
+            <div class="stat-unit">effects</div>
+          </article>
+        </div>
+
+        <div class="favorite">
+          <div class="stat-label">Favorite Feature</div>
+          <div class="stat-value" style="font-size: 18px" data-stat="favorite">Remove Glasses Glare</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" type="button" id="primaryShare">Share Your Report</button>
+          <button class="btn-secondary" type="button" onclick="alert('Play again placeholder')">Play Again</button>
+        </div>
+
+        <div class="kakao-input">
+          <label for="kakaoKey">Optional Kakao JavaScript Key (needed for Kakao share)</label>
+          <input id="kakaoKey" placeholder="Kakao JavaScript Key" />
+        </div>
+      </section>
+
+      <section class="log" id="eventLog" aria-live="polite">Logs will appear here…</section>
+    </main>
+
+    <div class="sheet" id="shareSheet" aria-modal="true" role="dialog">
+      <div class="sheet__mask" data-close-sheet></div>
+      <div class="sheet__panel">
+        <div class="sheet__grid">
+          <button class="sheet__item" id="shareFacebook">Facebook</button>
+          <button class="sheet__item" id="shareTwitter">X / Twitter</button>
+          <button class="sheet__item" id="shareKakao">Kakao</button>
+          <button class="sheet__item" id="shareInstagram">Instagram</button>
+        </div>
+        <div class="sheet__grid" style="margin-top: 16px">
+          <button class="sheet__item" id="copyLink">
+            <span class="copy-state"><span id="copyStatus">Copy Link</span></span>
+          </button>
+          <button class="sheet__item" id="downloadImage">Download</button>
+        </div>
+        <button class="sheet__cancel" data-close-sheet>Cancel</button>
+      </div>
+    </div>
+
+
+    <script>
+      const SHARE_STATIC_IMAGE = "https://res-dev.evoto.ai/ui/www/images/pages/newHome/twitter_image.png"
+      const SHARE_PAYLOAD = {
+        url: "https://www.evoto.ai/annual-bill",
+        title: "Evoto Rewind 2025",
+        description: "Look back your 2025 workflow!",
+        hashtags: ["EvotoRewind", "EvotoAI"],
+        imageUrl: SHARE_STATIC_IMAGE
+      }
+
+      const sheet = document.getElementById("shareSheet")
+      const copyStatus = document.getElementById("copyStatus")
+      const logPanel = document.getElementById("eventLog")
+      const kakaoKeyInput = document.getElementById("kakaoKey")
+      const reportSection = document.getElementById("sharePreview")
+      const twitterDescription = document.getElementById("twitterDescription")
+      const twitterImage = document.getElementById("twitterPreviewImage")
+      const twitterHashtags = document.getElementById("twitterHashtags")
+      const facebookDescription = document.getElementById("facebookDescription")
+      const facebookImage = document.getElementById("facebookPreviewImage")
+      const facebookLink = document.getElementById("facebookLink")
+      const ogImageMeta = document.querySelector('meta[property="og:image"]')
+      const twitterImageMeta = document.querySelector('meta[name="twitter:image"]')
+
+      const log = (...segments) => {
+        const time = new Date().toLocaleTimeString()
+        logPanel.textContent = `[${time}] ${segments.join(" ")}` + "\n" + logPanel.textContent
+      }
+
+      function hydratePreviewMeta() {
+        twitterDescription.textContent = `${SHARE_PAYLOAD.title} — ${SHARE_PAYLOAD.description}`
+        twitterHashtags.textContent = `Hashtags: ${SHARE_PAYLOAD.hashtags.map((tag) => `#${tag}`).join(" ")}`
+        facebookDescription.textContent = SHARE_PAYLOAD.title
+        facebookLink.textContent = `Link: ${SHARE_PAYLOAD.url}`
+      }
+
+      let previewImageUrl = null
+      function setPreviewImageSrc(src) {
+        if (previewImageUrl && previewImageUrl.startsWith("blob:")) {
+          URL.revokeObjectURL(previewImageUrl)
+        }
+        previewImageUrl = src
+        twitterImage.src = src
+        facebookImage.src = src
+        if (ogImageMeta) ogImageMeta.setAttribute("content", src)
+        if (twitterImageMeta) twitterImageMeta.setAttribute("content", src)
+      }
+
+      hydratePreviewMeta()
+      setPreviewImageSrc(SHARE_STATIC_IMAGE)
+
+      const openSheet = () => {
+        sheet.dataset.open = "true"
+        sheet.style.display = "block"
+        copyStatus.textContent = "Copy Link"
+      }
+
+      const closeSheet = () => {
+        sheet.dataset.open = "false"
+        sheet.style.display = "none"
+      }
+
+      document.getElementById("openShare").addEventListener("click", openSheet)
+      document.getElementById("primaryShare").addEventListener("click", openSheet)
+      sheet.querySelectorAll("[data-close-sheet]").forEach((node) => node.addEventListener("click", closeSheet))
+
+      function getShareUrl() {
+        return SHARE_PAYLOAD.url
+      }
+
+      function openPopup(url) {
+        const ref = window.open(url, "_blank", "noopener,noreferrer")
+        if (!ref) {
+          alert("Popup blocked by the browser")
+        }
+      }
+
+      document.getElementById("shareFacebook").addEventListener("click", () => {
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl())}`
+        log("Facebook share", shareUrl)
+        openPopup(shareUrl)
+        closeSheet()
+      })
+
+      document.getElementById("shareTwitter").addEventListener("click", () => {
+        const params = new URLSearchParams({
+          url: getShareUrl(),
+          text: SHARE_PAYLOAD.title,
+          hashtags: SHARE_PAYLOAD.hashtags.join(",")
+        })
+        const shareUrl = `https://twitter.com/intent/tweet?${params}`
+        log("Twitter share", shareUrl)
+        openPopup(shareUrl)
+        closeSheet()
+      })
+
+      async function copyLink() {
+        try {
+          await navigator.clipboard.writeText(getShareUrl())
+          copyStatus.textContent = "Link Copied"
+          log("Copied", getShareUrl())
+        } catch (error) {
+          log("Clipboard API failed", error)
+          window.prompt("Copy link", getShareUrl())
+        }
+      }
+
+      document.getElementById("copyLink").addEventListener("click", copyLink)
+
+      const scriptCache = new Map()
+      function loadScriptOnce(src, timeout = 15000) {
+        if (scriptCache.has(src)) return scriptCache.get(src)
+        const loader = new Promise((resolve, reject) => {
+          const timer = setTimeout(() => reject(new Error(`Load timeout: ${src}`)), timeout)
+          const script = document.createElement("script")
+          script.src = src
+          script.async = true
+          script.onload = () => {
+            clearTimeout(timer)
+            resolve(null)
+          }
+          script.onerror = () => {
+            clearTimeout(timer)
+            reject(new Error(`Failed to load script: ${src}`))
+          }
+          document.head.appendChild(script)
+        })
+        scriptCache.set(src, loader)
+        return loader
+      }
+
+      async function ensureKakao(appKey) {
+        if (!appKey) {
+          throw new Error("Kakao App Key missing")
+        }
+        await loadScriptOnce("https://developers.kakao.com/sdk/js/kakao.min.js")
+        const { Kakao } = window
+        if (!Kakao) {
+          throw new Error("Kakao SDK unavailable")
+        }
+        if (!Kakao.isInitialized()) {
+          Kakao.init(appKey)
+          log("Kakao initialized", appKey.slice(0, 6) + "***")
+        }
+        return Kakao
+      }
+
+      document.getElementById("shareKakao").addEventListener("click", async () => {
+        const appKey = kakaoKeyInput.value.trim()
+        if (!appKey) {
+          alert("Enter a Kakao JavaScript key before sharing")
+          return
+        }
+        try {
+          const Kakao = await ensureKakao(appKey)
+          Kakao.Share.sendDefault({
+            objectType: "feed",
+            content: {
+              title: SHARE_PAYLOAD.title,
+              description: SHARE_PAYLOAD.description,
+              imageUrl: SHARE_PAYLOAD.imageUrl,
+              link: {
+                mobileWebUrl: SHARE_PAYLOAD.url,
+                webUrl: SHARE_PAYLOAD.url
+              }
+            },
+            buttons: [
+              {
+                title: "View Detail",
+                link: {
+                  mobileWebUrl: SHARE_PAYLOAD.url,
+                  webUrl: SHARE_PAYLOAD.url
+                }
+              }
+            ]
+          })
+          log("Kakao share invoked")
+          closeSheet()
+        } catch (error) {
+          log("Kakao share failed", error)
+          alert(`Kakao share failed: ${error.message || error}`)
+        }
+      })
+
+      function canvasToBlob(canvas, type = "image/jpeg", quality = 0.92) {
+        return new Promise((resolve, reject) => {
+          canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Canvas toBlob failed"))), type, quality)
+        })
+      }
+
+      let cachedBlob = null
+      async function generateImageBlob() {
+        if (cachedBlob) return cachedBlob
+        const canvas = await html2canvas(reportSection, {
+          backgroundColor: "#141414",
+          useCORS: true,
+          scale: window.devicePixelRatio > 1 ? 2 : 1
+        })
+        cachedBlob = await canvasToBlob(canvas, "image/jpeg", 0.92)
+        const blobUrl = URL.createObjectURL(cachedBlob)
+        setPreviewImageSrc(blobUrl)
+        log("Image blob generated", `${(cachedBlob.size / 1024).toFixed(1)} KB`)
+        return cachedBlob
+      }
+
+      document.getElementById("downloadImage").addEventListener("click", async () => {
+        try {
+          const blob = await generateImageBlob()
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement("a")
+          link.href = url
+          link.download = `evoto-rewind-${Date.now()}.jpg`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          URL.revokeObjectURL(url)
+          log("Image downloaded")
+          closeSheet()
+        } catch (error) {
+          log("Download failed", error)
+          alert("Download failed. Check console for details.")
+        }
+      })
+
+      document.getElementById("shareInstagram").addEventListener("click", async () => {
+        try {
+          const blob = await generateImageBlob()
+          const url = URL.createObjectURL(blob)
+          openPopup(url)
+          log("Instagram helper opened", url)
+          setTimeout(() => URL.revokeObjectURL(url), 5000)
+          closeSheet()
+        } catch (error) {
+          log("Instagram helper failed", error)
+        }
+      })
+    </script>
+  </body>
+</html>
