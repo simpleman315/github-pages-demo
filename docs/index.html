@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
     <title>Evoto Share Logic Demo</title>
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.evoto.ai/annual-bill" />
@@ -338,8 +338,9 @@
 
         <div class="actions">
           <button class="btn-primary" type="button" id="primaryShare">Share Your Report</button>
-          <button class="btn-secondary" type="button" onclick="alert('Play again placeholder')">Play Again</button>
-        </div>
+          <button class="btn-secondary" type="button" id="directShareFacebook">Share to Facebook</button>
+          <button class="btn-secondary" type="button" onclick="alert('Play again placeholder')">Play Again2222</button>
+        </div> 
 
         <div class="kakao-input">
           <label for="kakaoKey">Optional Kakao JavaScript Key (needed for Kakao share)</label>
@@ -348,6 +349,36 @@
       </section>
 
       <section class="log" id="eventLog" aria-live="polite">Logs will appear here…</section>
+
+      <section class="preview-section">
+        <div class="preview-card">
+          <div class="preview-header">
+            <div class="preview-icon preview-icon--twitter">X</div>
+            <div>
+              <div class="preview-title">Twitter Preview</div>
+              <div class="preview-meta" id="twitterDescription"></div>
+              <div class="preview-meta" id="twitterHashtags"></div>
+            </div>
+          </div>
+          <div class="preview-image">
+            <img id="twitterPreviewImage" src="" alt="Twitter Share Preview" />
+          </div>
+        </div>
+
+        <div class="preview-card">
+          <div class="preview-header">
+            <div class="preview-icon preview-icon--facebook">f</div>
+            <div>
+              <div class="preview-title">Facebook Preview</div>
+              <div class="preview-meta" id="facebookDescription"></div>
+              <div class="preview-meta" id="facebookLink"></div>
+            </div>
+          </div>
+          <div class="preview-image">
+            <img id="facebookPreviewImage" src="" alt="Facebook Share Preview" />
+          </div>
+        </div>
+      </section>
     </main>
 
     <div class="sheet" id="shareSheet" aria-modal="true" role="dialog">
@@ -435,6 +466,12 @@
       document.getElementById("openShare").addEventListener("click", openSheet)
       document.getElementById("primaryShare").addEventListener("click", openSheet)
       sheet.querySelectorAll("[data-close-sheet]").forEach((node) => node.addEventListener("click", closeSheet))
+
+      document.getElementById("directShareFacebook").addEventListener("click", () => {
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl())}`
+        log("Facebook direct share", shareUrl)
+        openPopup(shareUrl)
+      })
 
       function getShareUrl() {
         return SHARE_PAYLOAD.url
