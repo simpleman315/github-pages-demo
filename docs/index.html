@@ -404,7 +404,7 @@
     <script>
       const SHARE_STATIC_IMAGE = "https://res-dev.evoto.ai/ui/www/images/pages/newHome/twitter_image.png"
       const SHARE_PAYLOAD = {
-        url: "https://www.evoto.ai/annual-bill",
+        url: "https://www.evoto.ai",
         title: "Evoto Rewind 2025",
         description: "Look back your 2025 workflow!",
         hashtags: ["EvotoRewind", "EvotoAI"],
@@ -445,8 +445,8 @@
         previewImageUrl = src
         twitterImage.src = src
         facebookImage.src = src
-        if (ogImageMeta) ogImageMeta.setAttribute("content", src)
-        if (twitterImageMeta) twitterImageMeta.setAttribute("content", src)
+        // if (ogImageMeta) ogImageMeta.setAttribute("content", src)
+        // if (twitterImageMeta) twitterImageMeta.setAttribute("content", src)
       }
 
       hydratePreviewMeta()

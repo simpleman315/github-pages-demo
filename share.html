@@ -340,7 +340,7 @@
           <button class="btn-primary" type="button" id="primaryShare">Share Your Report</button>
           <button class="btn-secondary" type="button" id="directShareFacebook">Share to Facebook</button>
           <button class="btn-secondary" type="button" onclick="alert('Play again placeholder')">Play Again2222</button>
-        </div>
+        </div> 
 
         <div class="kakao-input">
           <label for="kakaoKey">Optional Kakao JavaScript Key (needed for Kakao share)</label>
@@ -404,7 +404,7 @@
     <script>
       const SHARE_STATIC_IMAGE = "https://res-dev.evoto.ai/ui/www/images/pages/newHome/twitter_image.png"
       const SHARE_PAYLOAD = {
-        url: "https://www.evoto.ai/annual-bill",
+        url: "https://www.evoto.ai",
         title: "Evoto Rewind 2025",
         description: "Look back your 2025 workflow!",
         hashtags: ["EvotoRewind", "EvotoAI"],
@@ -445,8 +445,8 @@
         previewImageUrl = src
         twitterImage.src = src
         facebookImage.src = src
-        if (ogImageMeta) ogImageMeta.setAttribute("content", src)
-        if (twitterImageMeta) twitterImageMeta.setAttribute("content", src)
+        // if (ogImageMeta) ogImageMeta.setAttribute("content", src)
+        // if (twitterImageMeta) twitterImageMeta.setAttribute("content", src)
       }
 
       hydratePreviewMeta()
